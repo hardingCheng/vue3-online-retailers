@@ -9,11 +9,13 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "cz-customizable": "^6.3.0",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
-    "vuex": "^4.0.0-0"
+    "vuex": "^4.0.0-0",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.0.1",
