@@ -1,4 +1,5 @@
 <template>
+  <AppTopnav />
   <nav>顶部通栏</nav>
   <header>头部</header>
   <main>
@@ -8,8 +9,10 @@
   <footer>底部</footer>
 </template>
 <script>
+import AppTopnav from '@/components/app-topnav'
 export default {
-  name: 'Layout'
+  name: 'Layout',
+  components: { AppTopnav }
 }
 </script>
 <style lang="scss" scoped></style>

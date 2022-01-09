@@ -7,9 +7,5 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '../../assets/styles/mixins.scss';
-.container {
-  height: 30px;
-  @include hoverShadow;
-}
+@import '../../styles/mixins.scss';
 </style>
