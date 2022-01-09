@@ -1,12 +1,11 @@
 <template>
-  <!-- 顶部组件 -->
-  <!-- 头部组件 -->
-  <!-- 内容容器 -->
-  <div class="main">
+  <nav>顶部通栏</nav>
+  <header>头部</header>
+  <main>
     <!-- 二级路由 -->
     <router-view></router-view>
-  </div>
-  <!-- 底部组件 -->
+  </main>
+  <footer>底部</footer>
 </template>
 <script>
 export default {
