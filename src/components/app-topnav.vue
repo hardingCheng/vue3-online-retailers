@@ -40,7 +40,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '../styles/variables.scss';
 .app-topnav {
   background: #333;
   ul {
