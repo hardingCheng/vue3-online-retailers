@@ -1,13 +1,19 @@
 <template>
-  <div class="container">home</div>
+  <div class="page-home">
+    <!-- 首页入口 -->
+    <div class="home-entry">
+      <div class="container">
+        <!-- 左侧分类 -->
+        <HomeCategory />
+      </div>
+    </div>
+  </div>
 </template>
 <script>
+import HomeCategory from './components/home-category'
 export default {
-  name: 'Home'
+  name: 'PageHome',
+  components: { HomeCategory }
 }
 </script>
-<style lang="scss" scoped>
-.container {
-  height: 100vh;
-}
-</style>
+<style scoped lang="scss"></style>
