@@ -9,6 +9,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@vueuse/core": "^7.5.3",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "cz-customizable": "^6.3.0",

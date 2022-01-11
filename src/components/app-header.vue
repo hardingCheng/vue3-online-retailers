@@ -37,10 +37,10 @@ export default {
     width: 100px;
     a {
       display: block;
-      height: 132px;
+      height: 80px;
       width: 100%;
       text-indent: -9999px;
-      background: url(../assets/logo.png) no-repeat center 18px / contain;
+      background: url(../assets/logo.png) no-repeat center 5px / contain;
     }
   }
   .search {
