@@ -4,7 +4,7 @@
       <li
         v-for="item in menuList"
         :key="item.id"
-        @mouseover="categoryId = item.id"
+        @mouseenter="categoryId = item.id"
         :class="{ active: categoryId === item.id }"
       >
         <router-link :to="`/category/${item.id}`">{{ item.name }}</router-link>
