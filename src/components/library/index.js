@@ -6,6 +6,7 @@
 import Skeleton from './skeleton'
 import Carousel from './carousel'
 import More from './more'
+import defineDirective from './directive'
 export default {
   install(app) {
     // 在app上进行扩展，app提供 component directive 函数
@@ -13,5 +14,7 @@ export default {
     app.component(Skeleton.name, Skeleton)
     app.component(Carousel.name, Carousel)
     app.component(More.name, More)
+    // 指令
+    defineDirective(app)
   }
 }
