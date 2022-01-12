@@ -6,6 +6,6 @@ import store from './store'
 import 'normalize.css'
 import '@/styles/common.scss'
 
-import skeleton from './components/library'
+import qcompent from './components/library'
 // 插件的使用，在main.js使用app.use(插件)
-createApp(App).use(store).use(router).use(skeleton).mount('#app')
+createApp(App).use(store).use(router).use(qcompent).mount('#app')
