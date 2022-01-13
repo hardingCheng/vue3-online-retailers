@@ -1,6 +1,6 @@
 <template>
   <HomePanel title="最新专题">
-    <template v-slot:right><XtxMore /></template>
+    <template v-slot:right><More /></template>
     <div class="special-list" ref="homeSpecial">
       <div class="special-item" v-for="item in list" :key="item.id">
         <router-link to="/">
