@@ -6,6 +6,7 @@
 import Skeleton from './skeleton'
 import Carousel from './carousel'
 import More from './more'
+import Bread from './bread'
 import defineDirective from './directive'
 export default {
   install(app) {
@@ -14,6 +15,7 @@ export default {
     app.component(Skeleton.name, Skeleton)
     app.component(Carousel.name, Carousel)
     app.component(More.name, More)
+    app.component(Bread.name, Bread)
     // 指令
     defineDirective(app)
   }

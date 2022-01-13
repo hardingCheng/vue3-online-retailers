@@ -2,7 +2,7 @@
 <template>
   <div class="goods-item">
     <router-link :to="`/product/${goods.id}`" class="image">
-      <img :src="goods.picture" alt="" />
+      <img v-lazy="goods.picture" alt="" />
     </router-link>
     <p class="name ellipsis-2">{{ goods.name }}</p>
     <p class="desc">{{ goods.tag }}</p>
