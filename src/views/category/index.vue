@@ -4,10 +4,14 @@
       <!-- 面包屑 -->
       <Bread>
         <BreadItem to="/">首页</BreadItem>
-        <transition name="fade-right" mode="out-in">
-          <!-- 不同的key可以创建移除元素，创造触发动画条件。 -->
-          <BreadItem :key="topCategory.id">{{ topCategory.name }}</BreadItem>
-        </transition>
+        <!-- <Transition name="fade-right" mode="out-in">
+          <BreadItem v-if="topCategory.name" :key="topCategory.id">{{
+            topCategory.name
+          }}</BreadItem>
+        </Transition> -->
+        <BreadItem v-if="topCategory.name" :key="topCategory.id">{{
+          topCategory.name
+        }}</BreadItem>
       </Bread>
       <!-- 轮播图 -->
       <Carousel :sliders="sliders" style="height: 500px" />
@@ -59,7 +63,6 @@ export default {
     const store = useStore()
     const route = useRoute()
     const topCategory = computed(() => {
-      console.log(route.params.id)
       let cate = {}
       const item = store.state.category.list.find((item) => {
         // 顶级分类的ID
@@ -82,7 +85,7 @@ export default {
     watch(
       () => route.params.id,
       (newVal) => {
-        newVal && getSubList()
+        if (newVal && `/category/${newVal}` === route.path) getSubList()
       },
       { immediate: true }
     )
