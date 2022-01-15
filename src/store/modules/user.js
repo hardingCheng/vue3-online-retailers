@@ -6,9 +6,9 @@ export default {
       // 用户信息
       profile: {
         id: '',
+        account: '',
         avatar: '',
         nickname: '',
-        account: '',
         mobile: '',
         token: ''
       }

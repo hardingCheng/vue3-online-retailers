@@ -3,6 +3,7 @@ const Layout = () => import('@/views/Layout.vue')
 const Home = () => import('@/views/home')
 const TopCategory = () => import('@/views/category')
 const SubCategory = () => import('@/views/category/sub')
+const Login = () => import('@/views/login/index')
 const routes = [
   {
     path: '/',
@@ -15,7 +16,8 @@ const routes = [
       { path: '/category/:id', component: TopCategory },
       { path: '/category/sub/:id', component: SubCategory }
     ]
-  }
+  },
+  { path: '/login', component: Login }
 ]
 const router = createRouter({
   // 使用hash方式实现路由
