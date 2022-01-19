@@ -21,36 +21,53 @@
         <div class="spec">
           <GoodsName :goods="goods" />
           <GoodsSku :goods="goods" :skuId="skuId" @change="changeSku" />
+          <Numbox label="数量" v-model="num" :max="goods.inventory" />
+          <Button type="primary" style="margin-top: 20px">加入购物车</Button>
         </div>
       </div>
       <!-- 商品推荐 -->
-      <GoodsRelevant />
+      <GoodsRelevant :goodsId="goods.id" />
       <!-- 商品详情 -->
       <div class="goods-footer">
         <div class="goods-article">
           <!-- 商品+评价 -->
-          <div class="goods-tabs"></div>
+          <div class="goods-tabs">
+            <GoodsTabs :goods="goods" />
+          </div>
           <!-- 注意事项 -->
           <div class="goods-warn"></div>
         </div>
         <!-- 24热榜+专题推荐 -->
-        <div class="goods-aside"></div>
+        <div class="goods-aside">
+          <GoodsHot :goodsId="goods.id" :type="1" />
+          <GoodsHot :goodsId="goods.id" :type="2" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
 import GoodsRelevant from './components/goods-relevant'
-import GoodsImage from './components/goods-image.vue'
+import GoodsImage from './components/goods-image'
 import GoodsSales from './components/goods-sales'
 import GoodsName from './components/goods-name'
-import GoodsSku from './components/goods-sku.vue'
+import GoodsSku from './components/goods-sku'
+import GoodsTabs from './components/goods-tabs'
+import GoodsHot from './components/goods-hot'
 import { nextTick, ref, watch } from 'vue'
 import { findGoods } from '@/api/product'
 import { useRoute } from 'vue-router'
 export default {
   name: 'GoodsPage',
-  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku },
+  components: {
+    GoodsRelevant,
+    GoodsImage,
+    GoodsSales,
+    GoodsName,
+    GoodsSku,
+    GoodsTabs,
+    GoodsHot
+  },
   setup() {
     const goods = useGoods()
     // sku改变时候触发
@@ -61,7 +78,10 @@ export default {
         goods.value.inventory = sku.inventory
       }
     }
-    return { goods, changeSku }
+    // 选择的数量
+    const num = ref(1)
+    const skuId = ref('')
+    return { goods, changeSku, num, skuId }
   }
 }
 // 获取商品详情
