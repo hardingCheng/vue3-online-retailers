@@ -5,3 +5,16 @@
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
   }
 }
+@mixin sku-state-mixin() {
+  border: 1px solid #e4e4e4;
+  margin-right: 10px;
+  cursor: pointer;
+  &.selected {
+    border-color: $mainColor;
+  }
+  &.disabled {
+    opacity: 0.6;
+    border-style: dashed;
+    cursor: not-allowed;
+  }
+}
