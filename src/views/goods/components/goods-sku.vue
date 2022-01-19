@@ -33,9 +33,13 @@ export default {
     goods: {
       type: Object,
       default: () => ({ specs: [], skus: [] })
+    },
+    skuId: {
+      type: String,
+      default: ''
     }
   },
-  setup(props) {
+  setup(props, { emit }) {
     // 点击的是已选中，只需要取消当前的选中
     // 点击的是未选中，
     const clickSpecs = (item, val) => {
@@ -56,8 +60,30 @@ export default {
     }
 
     const pathMap = getPathMap(props.goods.skus)
+    // 根据传入的skuId默认选中规格按钮
+    initSelectedStatus(props.goods, props.skuId)
     // 组件初始化的时候更新禁用状态
     updateDisabledStatus(props.goods.specs, pathMap)
+    // 触发change事件将sku数据传递出去
+    const selectedArr = getSelectedArr(props.goods.specs).filter((v) => v)
+    // 必须规则选择完整
+    if (selectedArr.length === props.goods.specs.length) {
+      const skuIds = pathMap[selectedArr.join(spliter)]
+      const sku = props.goods.skus.find((sku) => sku.id === skuIds[0])
+      // 传递
+      emit('change', {
+        skuId: sku.id,
+        price: sku.price,
+        oldPrice: sku.oldPrice,
+        inventory: sku.inventory,
+        // 属性名：属性值
+        specsText: sku.specs
+          .reduce((p, n) => `${p} ${n.name}：${n.valueName}`, '')
+          .trim()
+      })
+    } else {
+      emit('change', {})
+    }
 
     return { clickSpecs }
   }
@@ -115,6 +141,19 @@ const updateDisabledStatus = (specs, pathMap) => {
       val.disabled = !pathMap[key]
     })
   })
+}
+// 初始化选中状态
+const initSelectedStatus = (goods, skuId) => {
+  // 找到sku  sku中包含相关的规格
+  const sku = goods.skus.find((sku) => sku.id === skuId)
+  if (sku) {
+    goods.specs.forEach((spec, i) => {
+      const value = sku.specs[i].valueName
+      spec.values.forEach((val) => {
+        val.selected = val.name === value
+      })
+    })
+  }
 }
 </script>
 
