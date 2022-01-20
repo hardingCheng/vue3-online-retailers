@@ -35,7 +35,9 @@
             <GoodsTabs :goods="goods" />
           </div>
           <!-- 注意事项 -->
-          <div class="goods-warn"></div>
+          <div class="goods-warn">
+            <GoodsWarn />
+          </div>
         </div>
         <!-- 24热榜+专题推荐 -->
         <div class="goods-aside">
@@ -54,7 +56,8 @@ import GoodsName from './components/goods-name'
 import GoodsSku from './components/goods-sku'
 import GoodsTabs from './components/goods-tabs'
 import GoodsHot from './components/goods-hot'
-import { nextTick, ref, watch } from 'vue'
+import GoodsWarn from './components/goods-warn'
+import { nextTick, ref, watch, provide } from 'vue'
 import { findGoods } from '@/api/product'
 import { useRoute } from 'vue-router'
 export default {
@@ -66,7 +69,8 @@ export default {
     GoodsName,
     GoodsSku,
     GoodsTabs,
-    GoodsHot
+    GoodsHot,
+    GoodsWarn
   },
   setup() {
     const goods = useGoods()
@@ -81,6 +85,9 @@ export default {
     // 选择的数量
     const num = ref(1)
     const skuId = ref('')
+
+    // 提供goods数据给后代组件使用
+    provide('goods', goods)
     return { goods, changeSku, num, skuId }
   }
 }
