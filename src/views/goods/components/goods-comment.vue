@@ -87,6 +87,13 @@
         </div>
       </div>
     </div>
+    <!-- 分页 -->
+    <Pagination
+      @current-change="changePager"
+      :total="total"
+      :current-page="reqParams.page"
+      v-if="total > 0"
+    />
   </div>
 </template>
 <script>
@@ -135,11 +142,13 @@ export default {
 
     // 初始化或者筛选条件改变后，获取列表数据。
     const commentList = ref([])
+    const total = ref(0)
     watch(
       reqParams,
       async () => {
-        const data = await findCommentListByGoods(goods.id, reqParams)
+        const data = await findCommentListByGoods(goods.value.id, reqParams)
         commentList.value = data.result.items
+        total.value = data.result.counts
       },
       { immediate: true }
     )
@@ -151,6 +160,10 @@ export default {
     const formatNickname = (nickname) => {
       return nickname.substr(0, 1) + '****' + nickname.substr(-1)
     }
+    // 改变分页函数
+    const changePager = (np) => {
+      reqParams.page = np
+    }
     return {
       commentInfo,
       currTagIndex,
@@ -159,7 +172,9 @@ export default {
       commentList,
       changeSort,
       formatSpecs,
-      formatNickname
+      formatNickname,
+      changePager,
+      total
     }
   }
 }
