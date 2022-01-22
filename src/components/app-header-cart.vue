@@ -1,9 +1,9 @@
 <template>
   <div class="cart">
-    <a class="curr" href="javascript:;">
+    <RouterLink to="/cart" class="curr">
       <i class="iconfont icon-cart"></i
       ><em>{{ $store.getters['cart/validTotal'] }}</em>
-    </a>
+    </RouterLink>
     <div
       class="layer"
       v-if="$store.getters['cart/validTotal'] && $route.path !== '/cart'"
@@ -14,7 +14,7 @@
           v-for="item in $store.getters['cart/validList']"
           :key="item.skuId"
         >
-          <RouterLink to="">
+          <RouterLink :to="`/product/${item.id}`">
             <img :src="item.picture" alt="" />
             <div class="center">
               <p class="name ellipsis-2">{{ item.name }}</p>
@@ -36,7 +36,9 @@
           <p>共 {{ $store.getters['cart/validTotal'] }} 件商品</p>
           <p>&yen;{{ $store.getters['cart/validAmount'] }}</p>
         </div>
-        <Button type="plain">去购物车结算</Button>
+        <Button type="plain" @click="$router.push('/cart')"
+          >去购物车结算</Button
+        >
       </div>
     </div>
   </div>

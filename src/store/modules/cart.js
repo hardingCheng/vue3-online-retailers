@@ -41,6 +41,7 @@ export default {
       // 1. goods中必需又skuId，才能找到对应的商品信息
       const updateGoods = state.list.find((item) => item.skuId === goods.skuId)
       for (const key in goods) {
+        // 布尔类型 false 值需要使用
         if (
           goods[key] !== null &&
           goods[key] !== undefined &&
@@ -110,6 +111,34 @@ export default {
           resolve()
         }
       })
+    },
+    // 修改购物车商品
+    updateCart(ctx, goods) {
+      // goods 中：必须有skuId，其他想修改的属性 selected  count
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          ctx.commit('updateCart', goods)
+          resolve()
+        }
+      })
+    },
+    // 做有效商品的全选&反选
+    checkAllCart(ctx, selected) {
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          // 1. 获取有效的商品列表，遍历的去调用修改mutations即可
+          ctx.getters.validList.forEach((item) => {
+            ctx.commit('updateCart', { skuId: item.skuId, selected })
+          })
+          resolve()
+        }
+      })
     }
   },
   getters: {
@@ -127,6 +156,34 @@ export default {
       return (
         getters.validList.reduce((p, c) => p + c.nowPrice * 100 * c.count, 0) /
         100
+      )
+    },
+    // 无效商品列表
+    invalidList(state) {
+      return state.list.filter((item) => !(item.stock > 0 && item.isEffective))
+    },
+    // 选中商品列表
+    selectedList(state, getters) {
+      return getters.validList.filter((item) => item.selected)
+    },
+    // 选中商品件数
+    selectedTotal(state, getters) {
+      return getters.selectedList.reduce((p, c) => p + c.count, 0)
+    },
+    // 选中商品总金额
+    selectedAmount(state, getters) {
+      return (
+        getters.selectedList.reduce(
+          (p, c) => p + c.nowPrice * 100 * c.count,
+          0
+        ) / 100
+      )
+    },
+    // 是否全选
+    isCheckAll(state, getters) {
+      return (
+        getters.validList.length === getters.selectedList.length &&
+        getters.selectedList.length !== 0
       )
     }
   }
