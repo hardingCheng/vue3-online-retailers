@@ -22,7 +22,9 @@
           <GoodsName :goods="goods" />
           <GoodsSku :goods="goods" :skuId="skuId" @change="changeSku" />
           <Numbox label="数量" v-model="num" :max="goods.inventory" />
-          <Button type="primary" style="margin-top: 20px">加入购物车</Button>
+          <Button type="primary" style="margin-top: 20px" @click="insertCart">
+            加入购物车</Button
+          >
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -57,9 +59,10 @@ import GoodsSku from './components/goods-sku'
 import GoodsTabs from './components/goods-tabs'
 import GoodsHot from './components/goods-hot'
 import GoodsWarn from './components/goods-warn'
-import { nextTick, ref, watch, provide } from 'vue'
+import { nextTick, ref, watch, provide, getCurrentInstance } from 'vue'
 import { findGoods } from '@/api/product'
 import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 export default {
   name: 'GoodsPage',
   components: {
@@ -73,6 +76,7 @@ export default {
     GoodsWarn
   },
   setup() {
+    const currSku = ref(null)
     const goods = useGoods()
     // sku改变时候触发
     const changeSku = (sku) => {
@@ -80,6 +84,9 @@ export default {
         goods.value.price = sku.price
         goods.value.oldPrice = sku.oldPrice
         goods.value.inventory = sku.inventory
+        currSku.value = sku
+      } else {
+        currSku.value = null
       }
     }
     // 选择的数量
@@ -88,7 +95,36 @@ export default {
 
     // 提供goods数据给后代组件使用
     provide('goods', goods)
-    return { goods, changeSku, num, skuId }
+
+    // 加入购物车逻辑
+    const instance = getCurrentInstance()
+    const store = useStore()
+    const insertCart = () => {
+      if (!currSku.value) {
+        return instance.proxy.$message({ text: '请选择商品规格' })
+      }
+      if (num.value > goods.inventory) {
+        return instance.proxy.$message({ text: '库存不足' })
+      }
+      store
+        .dispatch('cart/insertCart', {
+          id: goods.value.id,
+          skuId: currSku.value.skuId,
+          name: goods.value.name,
+          picture: goods.value.mainPictures[0],
+          price: currSku.value.price,
+          nowPrice: currSku.value.price,
+          count: num.value,
+          attrsText: currSku.value.specsText,
+          selected: true,
+          isEffective: true,
+          stock: currSku.value.inventory
+        })
+        .then(() => {
+          instance.proxy.$message({ text: '加入购物车成功', type: 'success' })
+        })
+    }
+    return { goods, changeSku, num, skuId, insertCart }
   }
 }
 // 获取商品详情

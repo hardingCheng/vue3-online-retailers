@@ -57,6 +57,26 @@ export default {
       }
       // 点击的时候更新禁用状态
       updateDisabledStatus(props.goods.specs, pathMap)
+      // 触发change事件将sku数据传递出去
+      const selectedArr = getSelectedArr(props.goods.specs).filter((v) => v)
+      // 必须规则选择完整
+      if (selectedArr.length === props.goods.specs.length) {
+        const skuIds = pathMap[selectedArr.join(spliter)]
+        const sku = props.goods.skus.find((sku) => sku.id === skuIds[0])
+        // 传递
+        emit('change', {
+          skuId: sku.id,
+          price: sku.price,
+          oldPrice: sku.oldPrice,
+          inventory: sku.inventory,
+          // 属性名：属性值
+          specsText: sku.specs
+            .reduce((p, n) => `${p} ${n.name}：${n.valueName}`, '')
+            .trim()
+        })
+      } else {
+        emit('change', {})
+      }
     }
 
     const pathMap = getPathMap(props.goods.skus)
@@ -64,26 +84,6 @@ export default {
     initSelectedStatus(props.goods, props.skuId)
     // 组件初始化的时候更新禁用状态
     updateDisabledStatus(props.goods.specs, pathMap)
-    // 触发change事件将sku数据传递出去
-    const selectedArr = getSelectedArr(props.goods.specs).filter((v) => v)
-    // 必须规则选择完整
-    if (selectedArr.length === props.goods.specs.length) {
-      const skuIds = pathMap[selectedArr.join(spliter)]
-      const sku = props.goods.skus.find((sku) => sku.id === skuIds[0])
-      // 传递
-      emit('change', {
-        skuId: sku.id,
-        price: sku.price,
-        oldPrice: sku.oldPrice,
-        inventory: sku.inventory,
-        // 属性名：属性值
-        specsText: sku.specs
-          .reduce((p, n) => `${p} ${n.name}：${n.valueName}`, '')
-          .trim()
-      })
-    } else {
-      emit('change', {})
-    }
 
     return { clickSpecs }
   }
@@ -94,7 +94,6 @@ const getPathMap = (skus) => {
   //  路径字典
   const pathMap = {}
   skus.forEach((sku) => {
-    console.log(sku)
     // 1. 过滤出有库存有效的sku
     if (sku.inventory) {
       // 2. 得到sku属性值数组
