@@ -4,7 +4,10 @@
       <i class="iconfont icon-cart"></i
       ><em>{{ $store.getters['cart/validTotal'] }}</em>
     </a>
-    <div class="layer">
+    <div
+      class="layer"
+      v-if="$store.getters['cart/validTotal'] && $route.path !== '/cart'"
+    >
       <div class="list">
         <div
           class="item"
@@ -22,7 +25,10 @@
               <p class="count">x{{ item.count }}</p>
             </div>
           </RouterLink>
-          <i class="iconfont icon-close-new"></i>
+          <i
+            @click="deleteCart(item.skuId)"
+            class="iconfont icon-close-new"
+          ></i>
         </div>
       </div>
       <div class="foot">
@@ -36,8 +42,26 @@
   </div>
 </template>
 <script>
+import { useStore } from 'vuex'
+import Message from '@/components/library/Message'
 export default {
-  name: 'AppHeaderCart'
+  name: 'AppHeaderCart',
+  setup() {
+    const store = useStore()
+    store.dispatch('cart/findCartList')
+    // 删除
+    const deleteCart = (skuId) => {
+      store
+        .dispatch('cart/deleteCart', skuId)
+        .then(() => {
+          Message({ type: 'success', text: '删除成功' })
+        })
+        .catch((e) => {
+          Message({ type: 'error', text: '删除失败' })
+        })
+    }
+    return { deleteCart }
+  }
 }
 </script>
 <style lang="scss" scoped>
