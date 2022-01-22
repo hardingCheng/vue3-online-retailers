@@ -39,3 +39,12 @@ export const findCommentListByGoods = (id, params) => {
   )
 }
 // https://mock.boxuegu.com/mock/1175/goods/${id}/evaluate
+
+/**
+ * 获取商品的specs和skus
+ * @param {String} skuId - 商品SKUID
+ * @returns Promise
+ */
+export const getSpecsAndSkus = (skuId) => {
+  return request(`/goods/sku/${skuId}`, 'get')
+}

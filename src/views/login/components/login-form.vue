@@ -201,10 +201,13 @@ export default {
           token,
           mobile
         })
-        // 2. 提示
-        Message({ type: 'success', text: '登录成功' })
-        // 3. 跳转
-        router.push(route.query.redirectUrl || '/')
+        // 合并购物车操作
+        store.dispatch('cart/mergeLocalCart').then(() => {
+          // 2. 提示
+          Message({ type: 'success', text: '登录成功' })
+          // 3. 跳转
+          router.push(route.query.redirectUrl || '/')
+        })
       }
     }
     // pause 暂停 resume 开始

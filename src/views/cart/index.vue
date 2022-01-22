@@ -49,7 +49,11 @@
                   <div>
                     <p class="name ellipsis">{{ item.name }}</p>
                     <!-- 选择规格组件 -->
-                    <p class="attr">{{ item.attrsText }}</p>
+                    <CartSku
+                      :attrs-text="item.attrsText"
+                      :skuId="item.skuId"
+                      @change="($event) => updateCartSku(item.skuId, $event)"
+                    />
                   </div>
                 </div>
               </td>
@@ -61,7 +65,11 @@
                 </p>
               </td>
               <td class="tc">
-                <Numbox :modelValue="item.count" />
+                <Numbox
+                  :max="item.stock"
+                  @change="($event) => changeCount(item.skuId, $event)"
+                  :modelValue="item.count"
+                />
               </td>
               <td class="tc">
                 <p class="f16 red">
@@ -124,9 +132,9 @@
             :modelValue="$store.getters['cart/isCheckAll']"
             >全选</Checkbox
           >
-          <a href="javascript:;">删除商品</a>
+          <a @click="batchDeleteCart()" href="javascript:;">删除商品</a>
           <a href="javascript:;">移入收藏夹</a>
-          <a href="javascript:;">清空失效商品</a>
+          <a @click="batchDeleteCart(true)" href="javascript:;">清空失效商品</a>
         </div>
         <div class="total">
           共 {{ $store.getters['cart/validTotal'] }} 件商品，已选择
@@ -143,12 +151,13 @@
 <script>
 import CartNone from '@/views/cart/components/cart-none.vue'
 import GoodRelevant from '@/views/goods/components/goods-relevant'
+import CartSku from './components/cart-sku.vue'
 import Confirm from '@/components/library/Confirm'
 import Message from '@/components/library/Message'
 import { useStore } from 'vuex'
 export default {
   name: 'CartPage',
-  components: { GoodRelevant, CartNone },
+  components: { GoodRelevant, CartNone, CartSku },
   setup() {
     const store = useStore()
     // 单选
@@ -178,7 +187,32 @@ export default {
           // console.log('点击取消')
         })
     }
-    return { checkOne, checkAll, deleteCart }
+    // 批量删除
+    const batchDeleteCart = (isClear) => {
+      Confirm({
+        text: `您确定从购物车删除${isClear ? '失效' : '选中'}的商品吗？`
+      })
+        .then(() => {
+          store.dispatch('cart/batchDeleteCart', isClear)
+        })
+        .catch((e) => {})
+    }
+    // 修改数量
+    const changeCount = (skuId, count) => {
+      store.dispatch('cart/updateCart', { skuId, count })
+    }
+    // 修改规格
+    const updateCartSku = (oldSkuId, newSku) => {
+      store.dispatch('cart/updateCartSku', { oldSkuId, newSku })
+    }
+    return {
+      checkOne,
+      checkAll,
+      deleteCart,
+      batchDeleteCart,
+      changeCount,
+      updateCartSku
+    }
   }
 }
 </script>

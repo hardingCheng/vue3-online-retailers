@@ -1,7 +1,7 @@
 <template>
   <!-- spu代表一个商品，拥有很多相同的属性。 -->
   <!-- sku代表该商品可选规格的任意组合，他是库存单位的唯一标识。 -->
-  <div class="goods-sku">
+  <div class="goods-sku" v-if="goods">
     <dl v-for="item in goods.specs" :key="item.id">
       <dt>{{ item.name }}</dt>
       <dd>

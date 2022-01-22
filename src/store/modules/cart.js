@@ -11,7 +11,8 @@
 
 // 本地：id skuId name picture price nowPrice count attrsText selected stock isEffective
 // 线上：比上面多 isCollect 有用 discount 无用 两项项信息
-import { getNewCartGoods } from '@/api/cart'
+import { getNewCartGoods, mergeCart } from '@/api/cart'
+
 export default {
   namespaced: true,
   state: () => {
@@ -55,6 +56,10 @@ export default {
     deleteCart(state, skuId) {
       const index = state.list.findIndex((item) => item.skuId === skuId)
       state.list.splice(index, 1)
+    },
+    // 设置购物车列表
+    setCartList(state, list) {
+      state.list = list
     }
   },
   actions: {
@@ -139,6 +144,62 @@ export default {
           resolve()
         }
       })
+    },
+    // 批量删除选中商品
+    batchDeleteCart(ctx, isClear) {
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          // 1. 获取选中商品列表，进行遍历调用deleteCart mutataions函数
+          ctx.getters[isClear ? 'invalidList' : 'selectedList'].forEach(
+            (item) => {
+              ctx.commit('deleteCart', item.skuId)
+            }
+          )
+          resolve()
+        }
+      })
+    },
+    // 修改sku规格函数
+    updateCartSku(ctx, { oldSkuId, newSku }) {
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          // 但你修改了sku的时候其实skuId需要更改，相当于把原来的信息移出，创建一条新的商品信息。
+          // 1. 获取旧的商品信息
+          const oldGoods = ctx.state.list.find(
+            (item) => item.skuId === oldSkuId
+          )
+          // 2. 删除旧的商品
+          ctx.commit('deleteCart', oldSkuId)
+          // 3. 合并一条新的商品信息
+          const {
+            skuId,
+            price: nowPrice,
+            inventory: stock,
+            specsText: attrsText
+          } = newSku
+          const newGoods = { ...oldGoods, skuId, nowPrice, stock, attrsText }
+          // 4. 去插入即可
+          ctx.commit('insertCart', newGoods)
+        }
+      })
+    },
+    // 合并本地购物车
+    async mergeLocalCart(ctx) {
+      // 存储token后调用合并API接口函数进行购物合并
+      const cartList = ctx.getters.validList.map(
+        ({ skuId, selected, count }) => {
+          return { skuId, selected, count }
+        }
+      )
+      await mergeCart(cartList)
+      // 合并成功将本地购物车删除
+      ctx.commit('setCartList', [])
     }
   },
   getters: {
