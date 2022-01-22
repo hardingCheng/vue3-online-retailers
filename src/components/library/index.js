@@ -10,6 +10,7 @@
 // import BreadItem from './bread-item.vue'
 import defineDirective from './directive'
 import Message from './Message.js'
+import Confirm from './Confirm.js'
 // export default {
 //   install(app) {
 //     // 在app上进行扩展，app提供 component directive 函数
@@ -43,6 +44,7 @@ export default {
     defineDirective(app)
     // 如果你想挂载全局的属性，能够通过组件实例调用的属性   this.$message
     app.config.globalProperties.$message = Message // 原型函数
+    app.config.globalProperties.$confirm = Confirm // 原型函数
   }
 }
 // require.context() 是webpack提供的一个自动导入的API

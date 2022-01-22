@@ -25,9 +25,15 @@
           </thead>
           <!-- 有效商品 -->
           <tbody>
+            <tr v-if="$store.getters['cart/validList'].length === 0">
+              <td colspan="6">
+                <CartNone />
+              </td>
+            </tr>
             <tr
               v-for="item in $store.getters['cart/validList']"
               :key="item.skuId"
+              v-else
             >
               <td>
                 <Checkbox
@@ -65,10 +71,7 @@
               <td class="tc">
                 <p><a href="javascript:;">移入收藏夹</a></p>
                 <p>
-                  <a
-                    @click="deleteCart(item.skuId)"
-                    class="green"
-                    href="javascript:;"
+                  <a @click="deleteCart(item)" class="green" href="javascript:;"
                     >删除</a
                   >
                 </p>
@@ -103,10 +106,7 @@
               <td class="tc"><p>&yen;200.00</p></td>
               <td class="tc">
                 <p>
-                  <a
-                    @click="deleteCart(item.skuId)"
-                    class="green"
-                    href="javascript:;"
+                  <a @click="deleteCart(item)" class="green" href="javascript:;"
                     >删除</a
                   >
                 </p>
@@ -141,11 +141,14 @@
   </div>
 </template>
 <script>
+import CartNone from '@/views/cart/components/cart-none.vue'
 import GoodRelevant from '@/views/goods/components/goods-relevant'
+import Confirm from '@/components/library/Confirm'
+import Message from '@/components/library/Message'
 import { useStore } from 'vuex'
 export default {
   name: 'CartPage',
-  components: { GoodRelevant },
+  components: { GoodRelevant, CartNone },
   setup() {
     const store = useStore()
     // 单选
@@ -157,8 +160,23 @@ export default {
       store.dispatch('cart/checkAllCart', selected)
     }
     // 删除
-    const deleteCart = (skuId) => {
-      store.dispatch('cart/deleteCart', skuId)
+    const deleteCart = (item) => {
+      // store.dispatch('cart/deleteCart', skuId)
+      Confirm({ text: ' 您确认从购物车删除该商品吗？' })
+        .then(() => {
+          // console.log('点击确认')
+          store
+            .dispatch('cart/deleteCart', item.skuId)
+            .then(() => {
+              Message({ type: 'success', text: '删除成功' })
+            })
+            .catch((e) => {
+              Message({ type: 'error', text: '删除失败' })
+            })
+        })
+        .catch((e) => {
+          // console.log('点击取消')
+        })
     }
     return { checkOne, checkAll, deleteCart }
   }
