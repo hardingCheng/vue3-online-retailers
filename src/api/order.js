@@ -27,3 +27,10 @@ export const editAddress = (address) => {
 export const createOrder = (order) => {
   return request('/member/order', 'post', order)
 }
+/**
+ * 获取订单详情
+ * @param {String} id - 订单ID
+ */
+export const findOrder = (id) => {
+  return request('/member/order/' + id, 'get')
+}
