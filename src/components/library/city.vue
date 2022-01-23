@@ -1,7 +1,7 @@
 <template>
   <div class="city" ref="target">
     <div class="select" @click="toggleDialog" :class="{ active }">
-      <span v-if="!fullLocation" class="placeholder">请选择配送地址</span>
+      <span v-if="!fullName" class="placeholder">{{ placeholder }}</span>
       <span v-else class="value">{{ fullLocation }}</span>
       <i class="iconfont icon-angle-down"></i>
     </div>
@@ -30,6 +30,10 @@ export default {
     fullLocation: {
       type: [String, Number],
       default: ''
+    },
+    placeholder: {
+      type: String,
+      default: '请选择配送地址'
     }
   },
   setup(props, { emit }) {

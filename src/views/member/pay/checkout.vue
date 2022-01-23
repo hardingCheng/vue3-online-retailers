@@ -6,29 +6,14 @@
         <BreadItem to="/cart">购物车</BreadItem>
         <BreadItem>填写订单</BreadItem>
       </Bread>
-      <div class="wrapper">
+      <div class="wrapper" v-if="checkoutInfo">
         <!-- 收货地址 -->
         <h3 class="box-title">收货地址</h3>
         <div class="box-body">
-          <div class="address">
-            <div class="text">
-              <!-- <div class="none">您需要先添加收货地址才可提交订单。</div> -->
-              <ul>
-                <li>
-                  <span>收<i />货<i />人：</span>朱超
-                </li>
-                <li><span>联系方式：</span>132****2222</li>
-                <li>
-                  <span>收货地址：</span>海南省三亚市解放路108号物质大厦1003室
-                </li>
-              </ul>
-              <a href="javascript:;">修改地址</a>
-            </div>
-            <div class="action">
-              <Button class="btn">切换地址</Button>
-              <Button class="btn">添加地址</Button>
-            </div>
-          </div>
+          <CheckoutAddress
+            @change="changeAddress"
+            :list="checkoutInfo.userAddresses"
+          />
         </div>
         <!-- 商品信息 -->
         <h3 class="box-title">商品信息</h3>
@@ -44,23 +29,20 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="i in 4" :key="i">
+              <tr v-for="item in checkoutInfo.goods" :key="item.id">
                 <td>
                   <a href="javascript:;" class="info">
-                    <img
-                      src="https://yanxuan-item.nosdn.127.net/cd9b2550cde8bdf98c9d083d807474ce.png"
-                      alt=""
-                    />
+                    <img :src="item.picture" alt="" />
                     <div class="right">
-                      <p>轻巧多用锅雪平锅 麦饭石不粘小奶锅煮锅</p>
-                      <p>颜色：白色 尺寸：10cm 产地：日本</p>
+                      <p>{{ item.name }}</p>
+                      <p>{{ item.attrsText }}</p>
                     </div>
                   </a>
                 </td>
-                <td>&yen;100.00</td>
-                <td>2</td>
-                <td>&yen;200.00</td>
-                <td>&yen;200.00</td>
+                <td>&yen;{{ item.payPrice }}</td>
+                <td>{{ item.count }}</td>
+                <td>&yen;{{ item.totalPrice }}</td>
+                <td>&yen;{{ item.totalPayPrice }}</td>
               </tr>
             </tbody>
           </table>
@@ -87,33 +69,78 @@
           <div class="total">
             <dl>
               <dt>商品件数：</dt>
-              <dd>5件</dd>
+              <dd>{{ checkoutInfo.summary.goodsCount }}件</dd>
             </dl>
             <dl>
               <dt>商品总价：</dt>
-              <dd>¥5697.00</dd>
+              <dd>¥{{ checkoutInfo.summary.totalPrice }}</dd>
             </dl>
             <dl>
               <dt>运<i></i>费：</dt>
-              <dd>¥0.00</dd>
+              <dd>¥{{ checkoutInfo.summary.postFee }}</dd>
             </dl>
             <dl>
               <dt>应付总额：</dt>
-              <dd class="price">¥5697.00</dd>
+              <dd class="price">¥{{ checkoutInfo.summary.totalPayPrice }}</dd>
             </dl>
           </div>
         </div>
         <!-- 提交订单 -->
         <div class="submit">
-          <XtxButton type="primary">提交订单</XtxButton>
+          <Button @click="submitOrder" type="primary">提交订单</Button>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { findCheckoutInfo, createOrder } from '@/api/order'
+import CheckoutAddress from './components/checkout-address'
+import Message from '@/components/library/Message'
 export default {
-  name: 'PayCheckoutPage'
+  name: 'PayCheckoutPage',
+  components: { CheckoutAddress },
+  // 1. 在拥有根元素的组件中，触发自定义事件，有没有emits选项无所谓
+  // 2. 如果你的组件渲染的代码片段，vue3.0规范，需要在emits中申明你所触发的自定义事件
+  // 3. 提倡：你发了自定义事件，需要在emits选项申明下，代码可读性很高
+  emits: ['change'],
+  setup() {
+    const checkoutInfo = ref(null)
+    findCheckoutInfo().then((data) => {
+      checkoutInfo.value = data.result
+      // 设置提交时候的商品
+      requestParams.goods = checkoutInfo.value.goods.map((item) => {
+        return {
+          skuId: item.skuId,
+          count: item.count
+        }
+      })
+    })
+    // 需要提交的字段
+    const requestParams = reactive({
+      addressId: null,
+      deliveryTimeType: 1,
+      payType: 1,
+      buyerMessage: '',
+      goods: []
+    })
+    // 切换地址
+    const changeAddress = (id) => {
+      requestParams.addressId = id
+    }
+
+    // 提交订单
+    const router = useRouter()
+    const submitOrder = () => {
+      if (!requestParams.addressId) return Message({ text: '请选择收货地址' })
+      createOrder(requestParams).then((data) => {
+        router.push({ path: '/member/pay', query: { id: data.result.id } })
+      })
+    }
+    return { checkoutInfo, changeAddress, submitOrder }
+  }
 }
 </script>
 <style scoped lang="scss">
@@ -130,59 +157,6 @@ export default {
     }
     .box-body {
       padding: 20px 0;
-    }
-  }
-}
-.address {
-  border: 1px solid #f5f5f5;
-  display: flex;
-  align-items: center;
-  .text {
-    flex: 1;
-    min-height: 90px;
-    display: flex;
-    align-items: center;
-    .none {
-      line-height: 90px;
-      color: #999;
-      text-align: center;
-      width: 100%;
-    }
-    > ul {
-      flex: 1;
-      padding: 20px;
-      li {
-        line-height: 30px;
-        span {
-          color: #999;
-          margin-right: 5px;
-          > i {
-            width: 0.5em;
-            display: inline-block;
-          }
-        }
-      }
-    }
-    > a {
-      color: $mainColor;
-      width: 160px;
-      text-align: center;
-      height: 90px;
-      line-height: 90px;
-      border-right: 1px solid #f5f5f5;
-    }
-  }
-  .action {
-    width: 420px;
-    text-align: center;
-    .btn {
-      width: 140px;
-      height: 46px;
-      line-height: 44px;
-      font-size: 14px;
-      &:first-child {
-        margin-right: 10px;
-      }
     }
   }
 }

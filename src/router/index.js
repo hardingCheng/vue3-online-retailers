@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-// import store from '@/store'
+import store from '@/store'
 const Layout = () => import('@/views/Layout.vue')
 const Home = () => import('@/views/home')
 const TopCategory = () => import('@/views/category')
@@ -36,14 +36,14 @@ const router = createRouter({
     return { left: 0, top: 0 }
   }
 })
-// // 前置导航守卫
-// router.beforeEach((to, from, next) => {
-//   // 用户信息
-//   const { token } = store.state.user.profile
-//   // 跳转去member开头的地址却没有登录
-//   if (to.path.startsWith('/member') && !token) {
-//     next({ path: '/login', query: { redirectUrl: to.fullPath } })
-//   }
-//   next()
-// })
+// 前置导航守卫
+router.beforeEach((to, from, next) => {
+  // 用户信息
+  const { token } = store.state.user.profile
+  // 跳转去member开头的地址却没有登录
+  if (to.path.startsWith('/member') && !token) {
+    next({ path: '/login', query: { redirectUrl: to.fullPath } })
+  }
+  next()
+})
 export default router
