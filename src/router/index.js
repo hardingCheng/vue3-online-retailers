@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { h } from 'vue'
 import store from '@/store'
 const Layout = () => import('@/views/Layout.vue')
 const Home = () => import('@/views/home')
@@ -10,6 +11,10 @@ const Cart = () => import('@/views/cart/index')
 const PayCheckout = () => import('@/views/member/pay/checkout')
 const PayIndex = () => import('@/views/member/pay/index')
 const payResult = () => import('@/views/member/pay/pay-result')
+const MemberLayout = () => import('@/views/member/Layout')
+const MemberHome = () => import('@/views/member/home')
+const MemberOrder = () => import('@/views/member/order')
+const MemberOrderDetail = () => import('@/views/member/detail')
 const routes = [
   {
     path: '/',
@@ -18,6 +23,22 @@ const routes = [
       {
         path: '/',
         component: Home
+      },
+      {
+        path: '/member',
+        component: MemberLayout,
+        children: [
+          { path: '/member', component: MemberHome },
+          {
+            path: '/member/order/',
+            // vue3.0 需要有嵌套关系才能模糊匹配
+            component: { render: () => h(<RouterView />) },
+            children: [
+              { path: '', component: MemberOrder },
+              { path: ':id', component: MemberOrderDetail }
+            ]
+          }
+        ]
       },
       { path: '/category/:id', component: TopCategory },
       { path: '/category/sub/:id', component: SubCategory },

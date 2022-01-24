@@ -7,5 +7,6 @@ import 'normalize.css'
 import '@/styles/common.scss'
 
 import qcompent from './components/library'
+import './mock'
 // 插件的使用，在main.js使用app.use(插件)
 createApp(App).use(store).use(router).use(qcompent).mount('#app')
