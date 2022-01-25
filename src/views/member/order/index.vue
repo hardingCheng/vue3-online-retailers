@@ -35,6 +35,10 @@
   <Teleport to="#dailog">
     <OrderCancel ref="orderCancelCom" />
   </Teleport>
+  <!-- 查看物理组件 -->
+  <Teleport to="#dailog">
+    <OrderLogistics ref="logisticsOrderCom" />
+  </Teleport>
 </template>
 
 <script>
@@ -43,11 +47,12 @@ import { orderStatus } from '@/api/constants'
 import { delteOrder, findOrderList, confirmOrder } from '@/api/order'
 import OrderItem from './components/order-item'
 import OrderCancel from './components/order-cancel'
+import OrderLogistics from './components/order-logistics'
 import Confirm from '@/components/library/Confirm'
 import Message from '@/components/library/Message'
 export default {
   name: 'MemberOrder',
-  components: { OrderItem, OrderCancel },
+  components: { OrderItem, OrderCancel, OrderLogistics },
   setup() {
     const activeName = ref('all')
     // 筛选条件
@@ -123,6 +128,14 @@ export default {
       }
       return { onConfirmOrder }
     }
+    // 封装逻辑-查看物流
+    const useLogisticsOrder = () => {
+      const logisticsOrderCom = ref(null)
+      const onLogisticsOrder = (item) => {
+        logisticsOrderCom.value.open(item)
+      }
+      return { onLogisticsOrder, logisticsOrderCom }
+    }
     return {
       activeName,
       orderStatus,
@@ -134,7 +147,8 @@ export default {
       changePager,
       onDeleteOrder,
       ...useCancelOrder(),
-      ...useConfirmOrder()
+      ...useConfirmOrder(),
+      ...useLogisticsOrder()
     }
   }
 }
