@@ -20,38 +20,63 @@
           size="small"
           >立即付款</Button
         >
-        <Button type="gray" size="small">取消订单</Button>
+        <Button @click="onCancelOrder(order)" type="gray" size="small"
+          >取消订单</Button
+        >
       </template>
       <!-- 待发货 -->
       <template v-if="orderList.orderState === 2">
-        <Button type="primary" size="small">再次购买</Button>
+        <Button
+          @click="$router.push(`/member/checkout?orderId=${order.id}`)"
+          type="plain"
+          size="small"
+          >再次购买</Button
+        >
       </template>
       <!-- 待收货 -->
       <template v-if="orderList.orderState === 3">
-        <Button type="primary" size="small">确认收货</Button>
+        <Button @click="onConfirmOrder(order)" type="primary" size="small"
+          >确认收货</Button
+        >
         <Button type="plain" size="small">再次购买</Button>
       </template>
       <!-- 待评价 -->
       <template v-if="orderList.orderState === 4">
-        <Button type="primary" size="small">再次购买</Button>
+        <Button
+          @click="$router.push(`/member/checkout?orderId=${order.id}`)"
+          type="plain"
+          size="small"
+          >再次购买</Button
+        >
         <Button type="plain" size="small">评价商品</Button>
         <Button type="gray" size="small">申请售后</Button>
       </template>
       <!-- 已完成 -->
       <template v-if="orderList.orderState === 5">
-        <Button type="primary" size="small">再次购买</Button>
+        <Button
+          @click="$router.push(`/member/checkout?orderId=${order.id}`)"
+          type="plain"
+          size="small"
+          >再次购买</Button
+        >
         <Button type="plain" size="small">查看评价</Button>
         <Button type="gray" size="small">申请售后</Button>
       </template>
       <!-- 已取消 -->
     </div>
   </div>
+  <!-- 取消订单组件 -->
+  <Teleport to="#dailog">
+    <OrderCancel ref="orderCancelCom" />
+  </Teleport>
 </template>
 <script>
 import { ref } from 'vue'
 import { findOrder } from '@/api/order'
 import { useRoute } from 'vue-router'
 import { orderStatus } from '@/api/constants'
+import OrderCancel from './order-cancel'
+import { useCancelOrder } from '../index'
 export default {
   name: 'OrderDetailPage',
   props: {
@@ -60,13 +85,16 @@ export default {
       default: () => ({})
     }
   },
+  components: {
+    OrderCancel
+  },
   setup() {
     const orderList = ref(null)
     const route = useRoute()
     findOrder(route.params.id).then((data) => {
       orderList.value = data.result
     })
-    return { orderList, orderStatus }
+    return { orderList, orderStatus, ...useCancelOrder() }
   }
 }
 </script>

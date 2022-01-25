@@ -55,24 +55,7 @@ export default {
   components: { OrderItem, OrderCancel, OrderLogistics },
   setup() {
     const activeName = ref('all')
-    // 筛选条件
-    const requestParams = reactive({
-      page: 1,
-      pageSize: 5,
-      orderState: 0
-    })
-    // 订单列表
-    const orderList = ref([])
-    const total = ref(0)
-    const loading = ref(true)
-    const findOrderListFn = () => {
-      loading.value = true
-      findOrderList(requestParams).then((data) => {
-        orderList.value = data.result.items
-        total.value = data.result.counts
-        loading.value = false
-      })
-    }
+
     watch(
       requestParams,
       () => {
@@ -92,50 +75,6 @@ export default {
       requestParams.page = np
     }
 
-    // 封装逻辑-取消订单
-    const useCancelOrder = () => {
-      const orderCancelCom = ref(null)
-      const onCancelOrder = (item) => {
-        // item 就是你要取消的订单
-        orderCancelCom.value.open(item)
-      }
-      return { onCancelOrder, orderCancelCom }
-    }
-    // 删除订单
-    const onDeleteOrder = (item) => {
-      Confirm({ text: '您确认删除该条订单吗？' })
-        .then(() => {
-          delteOrder([item.id]).then(() => {
-            Message({ text: '删除订单成功', type: 'success' })
-            findOrderListFn()
-          })
-        })
-        .catch((e) => {})
-    }
-    // 封装逻辑-确认收货
-    const useConfirmOrder = () => {
-      const onConfirmOrder = (item) => {
-        // item 就是你要确认收货的订单
-        Confirm({ text: '您确认收到货吗？确认后货款将会打给卖家。' }).then(
-          () => {
-            confirmOrder(item.id).then(() => {
-              Message({ text: '确认收货成功', type: 'success' })
-              // 确认收货后状态变成 待评价
-              item.orderState = 4
-            })
-          }
-        )
-      }
-      return { onConfirmOrder }
-    }
-    // 封装逻辑-查看物流
-    const useLogisticsOrder = () => {
-      const logisticsOrderCom = ref(null)
-      const onLogisticsOrder = (item) => {
-        logisticsOrderCom.value.open(item)
-      }
-      return { onLogisticsOrder, logisticsOrderCom }
-    }
     return {
       activeName,
       orderStatus,
@@ -151,6 +90,66 @@ export default {
       ...useLogisticsOrder()
     }
   }
+}
+// 筛选条件
+const requestParams = reactive({
+  page: 1,
+  pageSize: 5,
+  orderState: 0
+})
+// 订单列表
+const orderList = ref([])
+const total = ref(0)
+const loading = ref(true)
+const findOrderListFn = () => {
+  loading.value = true
+  findOrderList(requestParams).then((data) => {
+    orderList.value = data.result.items
+    total.value = data.result.counts
+    loading.value = false
+  })
+}
+// 封装逻辑-取消订单
+export const useCancelOrder = () => {
+  const orderCancelCom = ref(null)
+  const onCancelOrder = (item) => {
+    // item 就是你要取消的订单
+    orderCancelCom.value.open(item)
+  }
+  return { onCancelOrder, orderCancelCom }
+}
+// 删除订单
+export const onDeleteOrder = (item) => {
+  Confirm({ text: '您确认删除该条订单吗？' })
+    .then(() => {
+      delteOrder([item.id]).then(() => {
+        Message({ text: '删除订单成功', type: 'success' })
+        findOrderListFn()
+      })
+    })
+    .catch((e) => {})
+}
+// 封装逻辑-确认收货
+export const useConfirmOrder = () => {
+  const onConfirmOrder = (item) => {
+    // item 就是你要确认收货的订单
+    Confirm({ text: '您确认收到货吗？确认后货款将会打给卖家。' }).then(() => {
+      confirmOrder(item.id).then(() => {
+        Message({ text: '确认收货成功', type: 'success' })
+        // 确认收货后状态变成 待评价
+        item.orderState = 4
+      })
+    })
+  }
+  return { onConfirmOrder }
+}
+// 封装逻辑-查看物流
+export const useLogisticsOrder = () => {
+  const logisticsOrderCom = ref(null)
+  const onLogisticsOrder = (item) => {
+    logisticsOrderCom.value.open(item)
+  }
+  return { onLogisticsOrder, logisticsOrderCom }
 }
 </script>
 

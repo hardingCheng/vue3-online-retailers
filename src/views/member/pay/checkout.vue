@@ -95,8 +95,8 @@
 </template>
 <script>
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { findCheckoutInfo, createOrder } from '@/api/order'
+import { useRouter, useRoute } from 'vue-router'
+import { findCheckoutInfo, createOrder, findOrderRepurchase } from '@/api/order'
 import CheckoutAddress from './components/checkout-address'
 import Message from '@/components/library/Message'
 export default {
@@ -137,6 +137,29 @@ export default {
       if (!requestParams.addressId) return Message({ text: '请选择收货地址' })
       createOrder(requestParams).then((data) => {
         router.push({ path: '/member/pay', query: { id: data.result.id } })
+      })
+    }
+
+    const route = useRoute()
+    if (route.query.orderId) {
+      // 再次购买结算
+      findOrderRepurchase(route.query.orderId).then((data) => {
+        checkoutInfo.value = data.result
+        // 设置订单商品数据
+        checkoutInfo.value.goods = data.result.goods.map(({ skuId, count }) => ({
+          skuId,
+          count
+        }))
+      })
+    } else {
+      // 购物车结算
+      createOrder(requestParams).then((data) => {
+        checkoutInfo.value = data.result
+        // 设置订单商品数据
+        checkoutInfo.value.goods = data.result.goods.map(({ skuId, count }) => ({
+          skuId,
+          count
+        }))
       })
     }
     return { checkoutInfo, changeAddress, submitOrder }

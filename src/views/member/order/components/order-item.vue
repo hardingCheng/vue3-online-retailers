@@ -88,14 +88,23 @@
           <a href="javascript:;">取消订单</a>
         </p>
         <p v-if="[2, 3, 4, 5].includes(order.orderState)">
-          <a href="javascript:;">再次购买</a>
+          <a
+            @click="$router.push(`/member/checkout?orderId=${order.id}`)"
+            href="javascript:;"
+            >再次购买</a
+          >
         </p>
+
         <p v-if="[4, 5].includes(order.orderState)">
           <a href="javascript:;">申请售后</a>
         </p>
       </div>
     </div>
   </div>
+  <!-- 取消订单组件 -->
+  <Teleport to="#dailog">
+    <OrderCancel ref="orderCancelCom" />
+  </Teleport>
 </template>
 <script>
 import { orderStatus } from '@/api/constants'
